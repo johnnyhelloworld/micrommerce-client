@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: micrommerce-postgres-v2
+    environment:
+      POSTGRES_DB: micrommerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: votre_mot_de_passe
+    ports:
+      - "5434:5432"  # Utiliser le port 5433 au lieu de 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - micrommerce-network
+
+  micrommerce-app:
+    build: .
+    container_name: micrommerce-client-v2
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/micrommerce
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=votre_mot_de_passe
+    depends_on:
+      - postgres
+    networks:
+      - micrommerce-network
+
+volumes:
+  postgres_data:
+
+networks:
+  micrommerce-network:
+    driver: bridge
